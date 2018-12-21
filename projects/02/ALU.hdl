@@ -42,5 +42,20 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+    // InX will be either false (0) or x
+    Mux16(a=x, b=false, sel=zx, out=InX);
+    // InY will be either false (0) or y
+    Mux16(a=y, b=false, sel=zy, out=InY);
+    Not16(in=InX, out=NotInX);
+    Not16(in=InY, out=NotInY);
+    // InputX will be either the nagation of X or X
+    Mux16(a=InX, b=NotInX, sel=nx, out=InputX);
+    // InputY will be either the nagation of Y or Y
+    Mux16(a=InY, b=NotInY, sel=ny, out=InputY);
+    And16(a=InputX, b=InputY, out=AndXY); // Calculate AND
+    Add16(a=InputX, b=InputY, out=AddXY); // Calculate +
+    // out1 is the first output based on f
+    Mux16(a=AndXY, b=AddXY, sel=f, out=out1);
+    Not16(in=out1, out=NotOut1); // negation of out1
+    Mux16(a=out1, b=NotOut1, sel=no, out=out);
 }
