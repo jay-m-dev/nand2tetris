@@ -57,5 +57,11 @@ CHIP ALU {
     // out1 is the first output based on f
     Mux16(a=AndXY, b=AddXY, sel=f, out=out1);
     Not16(in=out1, out=NotOut1); // negation of out1
-    Mux16(a=out1, b=NotOut1, sel=no, out=out);
+    Mux16(a=out1, b=NotOut1, sel=no, out[15]=ng, out[0..7]=Half1, out[8..15]=Half2, out=out);
+
+    // check if all of Half1 and Half2 are nonzero
+    Or8Way(in=Half1, out=OrOut1);
+    Or8Way(in=Half2, out=OrOut2);
+    Or(a=OrOut1, b=OrOut2, out=NotZero);
+    Not(in=NotZero, out=zr);
 }
