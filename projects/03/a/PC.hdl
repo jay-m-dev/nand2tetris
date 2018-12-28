@@ -17,40 +17,45 @@ CHIP PC {
 
     PARTS:
     // Put your code here:
+    // found a more optimal solution using fewer chips.
+    // I'm leaving my original solution below for reference
+    Inc16(in=inMem, out=inMemPlus1);
+    Mux16(a=inMem, b=inMemPlus1, sel=inc, out=inMemInc);
+    Mux16(a=inMemInc, b=in, sel=load, out=inMemLoad);
+    Mux16(a=inMemLoad, b=false, sel=reset, out=inMain);
+    // load can be made true, since the inMem value is being propagated throughout the chips
+    Register(in=inMain, load=true, out=inMem, out=out);
+
+
+    // My solution below consists of some redundant chips, more optimal solution above
     // This one hasn't been easy to implement.
     // The idea I struggled with the most is that in sequential logic
     // the state of the output is changed until the NEXT clock cycle.
     // it looks like there's an operational precedence at play here.
     // reset > load > inc
-    Mux16(a=inMem, b=false, sel=reset, out=outReset); // reset value in mem.
-    // Mux16(a=inMem, b=outReset, sel=reset, out=inOrReset); // choose between the current value or the reset value
+    // another important assumption is that whenever inc or reset are true,
+    // load must be set to true, no matter what the input load is
+    // the trick was to use Mux16 chips to select between one value or another
+    // AND to propagate the selected value into the next Mux16
+    // Mux16(a=inMem, b=false, sel=reset, out=outReset);                // choose between existing value or reset value
+    // Inc16(in=inMem, out=inMemPlus1);                                 // increase value in mem
+    // Mux16(a=inMem, b=inMemPlus1, sel=inc, out=inMemInc);             // choose between existing value or increased value
+    // // ensure that loadIn is set to true whenever either inc or reset are true
+    // Or(a=reset, b=load, out=loadOrReset);
+    // Or(a=inc, b=load, out=loadOrInc);
+    // Or(a=loadOrReset, b=loadOrInc, out=loadIn);
+    // // outReset will contain the existing value in memory or the reset value
+    // Mux16(a=inMemInc, b=outReset, sel=reset, out=inMemOrIncOrReset); // choose between increased value or outReset based on reset pin
+    // // inMemorIncOrReset will contain either:
+    // //    (1) the existing value in memory,
+    // //    (2) the increased value, or
+    // //    (3) the reset value
+    // Mux16(a=inMemOrIncOrReset, b=in, sel=load, out=inLoaded);        // choose between inMemorIncOrReset or the input we want to load based on load pin
+    // // inLoaded will contain either inMemorIncOrReset (as described above) or the value we want to load
+    // Mux16(a=inLoaded, b=inMemOrIncOrReset, sel=reset, out=inMain1);  // choose between inLoaded or the value in inMemOrIncOrReset
+    // Mux16(a=inMemInc, b=inMain1, sel=loadIn, out=inMain);            // finally we need to choose between the increased value or inMain1
+    // // inMain will contain the final value we need to feed in the register
+    // // need out to be connected to to pins, inMem and out.
+    // Register(in=inMain, load=loadIn, out=inMem, out=out);
 
-    Inc16(in=inMem, out=inMemPlus1); // increase value in mem
-    Mux16(a=inMem, b=inMemPlus1, sel=inc, out=inMemInc); // choose between existing value of increased value
-
-    // Mux16(a=inMem, b=outReset, sel=reset, out=inMain);
-
-    // if reset, let's just reset, load needs to be true
-    Or(a=reset, b=load, out=loadOrReset);
-    Mux16(a=inMem, b=outReset, sel=reset, out=inMemOrReset);
-
-    Mux16(a=inMemOrReset, b=in, sel=load, out=inLoaded);
-
-    Mux16(a=inLoaded, b=inMemOrReset, sel=reset, out=inMain1);
-
-    Mux16(a=inMemInc, b=inMain1, sel=load, out=inMain);
-
-    // if load is true, let's just load the new value
-    // Mux16(a=inResetOrIncrease, b=in, sel=load, out=inLoad);
-
-    Or(a=reset, b=inc, out=load1); // reset or inc must make load true
-    Or(a=load1, b=load, out=loadIn); // load needs to be true if reset or inc
-    // And(a=load, b=reset, out=LetsReset); // same as just reset value (redundant)
-    // And(a=load, b=inc, out=LetsIncrease); // same as just inc value (redundant)
-    // Or(a=reset, b=inc, out=ResetOrIncrease); // if out is false, we need to load new value
-    // if it's not a reset or increase and load is true, we want to set the
-    // new value
-    // Mux16(a=in, b=inResetOrIncrease, sel=ResetOrIncrease, out=inMain); // choose between new in or Increased/Reset value
-    // Mux16(a=inResetOrIncrease, b=in, sel=load, out=inMain); // choose between new in or Increased/Reset value
-    Register(in=inMain, load=loadIn, out=inMem, out=out);
 }
