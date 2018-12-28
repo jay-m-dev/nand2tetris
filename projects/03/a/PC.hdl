@@ -17,4 +17,40 @@ CHIP PC {
 
     PARTS:
     // Put your code here:
+    // This one hasn't been easy to implement.
+    // The idea I struggled with the most is that in sequential logic
+    // the state of the output is changed until the NEXT clock cycle.
+    // it looks like there's an operational precedence at play here.
+    // reset > load > inc
+    Mux16(a=inMem, b=false, sel=reset, out=outReset); // reset value in mem.
+    // Mux16(a=inMem, b=outReset, sel=reset, out=inOrReset); // choose between the current value or the reset value
+
+    Inc16(in=inMem, out=inMemPlus1); // increase value in mem
+    Mux16(a=inMem, b=inMemPlus1, sel=inc, out=inMemInc); // choose between existing value of increased value
+
+    // Mux16(a=inMem, b=outReset, sel=reset, out=inMain);
+
+    // if reset, let's just reset, load needs to be true
+    Or(a=reset, b=load, out=loadOrReset);
+    Mux16(a=inMem, b=outReset, sel=reset, out=inMemOrReset);
+
+    Mux16(a=inMemOrReset, b=in, sel=load, out=inLoaded);
+
+    Mux16(a=inLoaded, b=inMemOrReset, sel=reset, out=inMain1);
+
+    Mux16(a=inMemInc, b=inMain1, sel=load, out=inMain);
+
+    // if load is true, let's just load the new value
+    // Mux16(a=inResetOrIncrease, b=in, sel=load, out=inLoad);
+
+    Or(a=reset, b=inc, out=load1); // reset or inc must make load true
+    Or(a=load1, b=load, out=loadIn); // load needs to be true if reset or inc
+    // And(a=load, b=reset, out=LetsReset); // same as just reset value (redundant)
+    // And(a=load, b=inc, out=LetsIncrease); // same as just inc value (redundant)
+    // Or(a=reset, b=inc, out=ResetOrIncrease); // if out is false, we need to load new value
+    // if it's not a reset or increase and load is true, we want to set the
+    // new value
+    // Mux16(a=in, b=inResetOrIncrease, sel=ResetOrIncrease, out=inMain); // choose between new in or Increased/Reset value
+    // Mux16(a=inResetOrIncrease, b=in, sel=load, out=inMain); // choose between new in or Increased/Reset value
+    Register(in=inMain, load=loadIn, out=inMem, out=out);
 }
