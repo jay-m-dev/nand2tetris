@@ -62,7 +62,3 @@
 	M=M+1
 	@CLEAR
 	0;JMP
-
-(END)
-	@END
-	0;JMP
