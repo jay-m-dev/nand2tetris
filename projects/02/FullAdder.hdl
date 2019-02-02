@@ -14,4 +14,10 @@ CHIP FullAdder {
 
     PARTS:
     // Put you code here:
+    // sum is given by a straight sum of a + b + c (ignoring the carry)
+    // the final carry is just an OR between the carries given by
+    // the 2 separate sums!
+    HalfAdder(a=a, b=b, sum=sumab, carry=carryab);
+    HalfAdder(a=sumab, b=c, sum=sum, carry=carryabc);
+    Or(a=carryab, b=carryabc, out=carry);
 }
