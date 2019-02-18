@@ -38,39 +38,46 @@ CHIP CPU {
         pc[15];          // ROM address (of next instruction)
 
     PARTS:
-    // get type of instruction
-    Not(in=instruction[15], out=Ainstruction);
-    Not(in=Ainstruction, out=Cinstruction);
+    // instruction[15] == 0 is an A-instruction, 1 is a C-instruction
+    Not(in=instruction[15], out=Ainst);
+    //  if it is a C-instruction and d1 is 1, we want to write to the A register
+    And(a=instruction[15], b=instruction[5], out=ToA);    // C-inst and dest to A-reg?
+    Mux16(a=instruction, b=ALUout, sel=ToA, out=Mux1out);
     
-    And(a=Cinstruction, b=instruction[5], out=ALUtoA);    // C-inst and dest to A-reg?
-    Mux16(a=instruction, b=ALUout, sel=ALUtoA, out=Aregin);
+    // if this is an A-instruction or we want to write to the A register (on a C-instruction),
+    // we want to assert load in the ARegister
+    Or(a=Ainst, b=ToA, out=assertA);
+    ARegister(in=Mux1out, load=assertA, out=Aout);
     
-    Or(a=Ainstruction, b=ALUtoA, out=loadA);    // load A if A-inst or C-inst&dest to A-reg
-    ARegister(in=Aregin, load=loadA, out=Aout);
-    
-    Mux16(a=Aout, b=inM, sel=instruction[12], out=AMout);   // select A or M based on a-bit
+    // the a-bit determines whether we select A or M
+    Mux16(a=Aout, b=inM, sel=instruction[12], out=Mux2out);
 
-    And(a=Cinstruction, b=instruction[4], out=loadD);
-    DRegister(in=ALUout, load=loadD, out=Dout);    // load the D register from ALU
+    // if this is a C-instruction and d2 is 1, we want to write to the D register
+    And(a=instruction[15], b=instruction[4], out=loadD);
+    DRegister(in=ALUout, load=loadD, out=Dout);
     
-    ALU(x=Dout, y=AMout, zx=instruction[11], nx=instruction[10], 
+    ALU(x=Dout, y=Mux2out, zx=instruction[11], nx=instruction[10], 
         zy=instruction[9], ny=instruction[8], f=instruction[7],
-        no=instruction[6], out=ALUout, zr=ZRout, ng=NGout); // calculate
+        no=instruction[6], out=ALUout, zr=zero, ng=negative);
         
     // Set outputs for writing memory
     Or16(a=false, b=Aout, out[0..14]=addressM);
     Or16(a=false, b=ALUout, out=outM);
-    And(a=Cinstruction, b=instruction[3], out=writeM);
+    And(a=instruction[15], b=instruction[3], out=writeM);
     
-    // calc PCload & PCinc - whether to load PC with A reg
-    And(a=ZRout, b=instruction[1], out=jeq);    // is zero and jump if zero
-    And(a=NGout, b=instruction[2], out=jlt);    // is neg and jump if neg
-    Or(a=ZRout, b=NGout, out=zeroOrNeg);
-    Not(in=zeroOrNeg, out=positive);            // is positive (not zero and not neg)
-    And(a=positive, b=instruction[0], out=jgt); // is pos and jump if pos
+    Or(a=zero, b=negative, out=zeroOrNeg);
+    Not(in=zeroOrNeg, out=positive);
+    // positive AND jump when > 0
+    And(a=positive, b=instruction[0], out=jgt);
+    // zero AND jump when 0
+    And(a=zero, b=instruction[1], out=jeq);
+    // negative AND jump when < 0
+    And(a=negative, b=instruction[2], out=jlt);
     Or(a=jeq, b=jlt, out=jle);
-    Or(a=jle, b=jgt, out=jumpToA);              // load PC if cond met and jump if cond
-    And(a=Cinstruction, b=jumpToA, out=PCload); // Only jump if C instruction
-    Not(in=PCload, out=PCinc);                  // only inc if not load
-    PC(in=Aout, inc=PCinc, load=PCload, reset=reset, out[0..14]=pc);
+    Or(a=jle, b=jgt, out=goToA);
+    // make sure it's a C-instruction when jumping
+    And(a=instruction[15], b=goToA, out=setPC);
+    // If not setting PC, then increase it (PC++)
+    Not(in=setPC, out=increasePC);
+    PC(in=Aout, inc=increasePC, load=setPC, reset=reset, out[0..14]=pc);
 }
