@@ -43,19 +43,24 @@ CHIP CPU {
     // The MSB is the last index, i.e. instuction[15] is the MSB of the instruction
     // DMux8Way(in=instruction[0..7], sel=, a=, b=, c=, d=, e=, f=, g=, h=);
     // DMux8Way(in=instruction[8..15], sel=, a=, b=, c=, d=, e=, f=, g=, h=);
-    Mux16(a=instruction, b=, sel=instruction[15], out=out2A);
-    ARegister(in=out2A, load=instruction[6], out=Aout);
-    DRegister(in=, load=, out=);
-    Mux16(a=inM, b=Aout, sel=, out=);
+    Mux16(a=instruction, b=ALUout, sel=instruction[15], out=Mux1out);
+    ARegister(in=Mux1out, load=instruction[5], out=Aout, out[0..14]=addressM);
+    DRegister(in=ALUout, load=instruction[4], out=Dout);
+    Mux16(a=Aout, b=inM, sel=instruction[12], out=Mux2Out);
     // Need the inc input to PC, if inc=true, then the PC will be incremented PC++
     // This should happen when there is no jump, i.e. when all 3 jump bins in instruction are 0
     Or(a=instruction[0], b=instruction[1], out=Jump1);
-    Or(a=Jump1, b=instruction[2], out=Jump);
+    Or(a=Jump1, b=instruction[2], out=Jump2);
+    // Or(a=zero, b=negative, out=ZeroOrNeg);
+    And(a=Jump2, b=instruction[15], out=Jump);
     // if Jump is true, there is a jump in the instruction
     // if jump is false, we want to feed NoJump (true) to inc in PC
     Not(in=Jump, out=NoJump);
     // if there IS a jump, then we want to assert the load bit in PC
     // so the value in in will be set in PC
-    PC(in=Aout, load=Jump, inc=NoJump, reset=reset, out=PCout);
-    ALU(x=, y=, zx=, nx=, zy=, ny=, f=, no=, out=, zr=, ng=);
+    PC(in=Aout, load=Jump, inc=NoJump, reset=reset, out[0..14]=pc);
+    // ALU(x=Mux2Out, y=Dout, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=outM, out=ALUout, zr=zero, ng=negative);
+    ALU(x=Dout, y=Mux2Out, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=outM, out=ALUout, zr=zero, ng=negative);
+    And(a=instruction[3], b=instruction[15], out=writeM);
+    // Or16(a=Aout[0..14], b=false, out=addressM);
 }
