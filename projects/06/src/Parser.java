@@ -2,51 +2,38 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Queue;
+import java.util.LinkedList;
 class Parser {
     private BufferedReader inputStream;
     private String currentCommand;
+    private Queue<String> queue = new LinkedList<String>();
     // constructor
     public Parser(String fileName) {
         // opens the filestream and gets ready to parse it.
+        String line = null;
         try {
             inputStream = new BufferedReader( new FileReader( fileName ) );
-        } catch (FileNotFoundException e) {
-            System.err.format("IOException: %s%n", e);
+            while ((line = inputStream.readLine()) != null) {
+                line = line.trim();
+                if (!(line.startsWith("//") || line.isEmpty())) {
+                    queue.add(line);
+                }
+            }
+        // } catch (FileNotFoundException | IOException e) {
+        } catch (IOException e) {
+            System.err.format("Exception: %s%n", e);
         }
     }
     private Boolean hasMoreCommands() {
         // determines if there are more commands in the input
         // the line should not be an empty line or a comment
-        String line = null;
-
-        try {
-            while ((line = inputStream.readLine()) != null) {
-                line = line.trim(); // remove white space
-                if (!(line.startsWith("//") || line.isEmpty()))
-                    return true;
-            } 
-        } catch (IOException e) {
-            System.err.format("IOException: %s%n", e);
-        }
-
-        return false;
+        return (queue.peek() != null);
     }
     private void advance() {
         // reads the next command from the input and makes it the current command
         // Should be called only if hasMoreCommands returns true
-        String line = null;
-
-        try {
-            while ((line = inputStream.readLine()) != null) {
-                line = line.trim(); // remove white space
-                if (!(line.startsWith("//") || line.isEmpty())) {
-                    this.currentCommand = line;
-                    break;
-                }
-            } 
-        } catch (IOException e) {
-            System.err.format("IOException: %s%n", e);
-        }
+        this.currentCommand = queue.poll();
     }
     enum Command {
         A_COMMAND,
@@ -61,10 +48,8 @@ class Parser {
         else
             return Command.L_COMMAND;
     }
-    private Boolean isNumeric(String str)  
-    {  
-        try  
-        {  
+    private Boolean isNumeric(String str)  {  
+        try  {  
             double d = Double.parseDouble(str);  
         }  
         catch(NumberFormatException e)  {  
