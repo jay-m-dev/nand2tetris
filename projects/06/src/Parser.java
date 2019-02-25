@@ -25,12 +25,12 @@ class Parser {
             System.err.format("Exception: %s%n", e);
         }
     }
-    private Boolean hasMoreCommands() {
+    public Boolean hasMoreCommands() {
         // determines if there are more commands in the input
         // the line should not be an empty line or a comment
         return (queue.peek() != null);
     }
-    private void advance() {
+    public void advance() {
         // reads the next command from the input and makes it the current command
         // Should be called only if hasMoreCommands returns true
         this.currentCommand = queue.poll();
@@ -40,7 +40,7 @@ class Parser {
         C_COMMAND,
         L_COMMAND
     }
-    private Command commandType() {
+    public Command commandType() {
         if (this.currentCommand.startsWith("@") || isNumeric(this.currentCommand))
             return Command.A_COMMAND;
         else if (this.currentCommand.matches(".*[=;].*"))
@@ -57,13 +57,13 @@ class Parser {
         }  
         return true;  
     }
-    private String symbol() {
+    public String symbol() {
         // returns the symbol or decimal Xxx of the current command @Xxx or (Xxx)
         // Should be called only when commandType() is A_COMMAND or L_COMMAND
         int i = Integer.parseInt(this.currentCommand);
         return Integer.toBinaryString(i);
     }
-    private String dest() {
+    public String dest() {
         // Returns the "dest" mnemonic in the current C-command (8 possibilities)
         // Should be called only when commandType() is C_COMMAND
         String ret = "null";
@@ -72,7 +72,7 @@ class Parser {
 
         return ret;
     }
-    private String comp() {
+    public String comp() {
         // Returns the "comp" mnemonic in the current C-command (28 possibilities)
         // Should be called only when commandType() is C_COMMAND
         String ret = this.currentCommand;
@@ -84,7 +84,7 @@ class Parser {
             ret = ret.split(";")[0]; // we want the first token
         return ret;
     }
-    private String jump() {
+    public String jump() {
         // Returns the "jump" mnemonic in the current C-command (8 possibilities)
         // Should be called only when commandType() is C_COMMAND
         String ret = "null";
