@@ -1,7 +1,7 @@
 import java.util.Hashtable;
 
 class Code {
-    private String dest(String dest) {
+    public String dest(String dest) {
         // Returns the "dest" mnemonic in the current C-command (8 possibilities)
         // Should be called only when commandType() is C_COMMAND
         String ret = "";
@@ -11,12 +11,12 @@ class Code {
         else
             ret += "0";
         // second digit
-        if (dest.contains("M"))
+        if (dest.contains("D"))
             ret += "1";
         else
             ret += "0";
         // third digit
-        if (dest.contains("D"))
+        if (dest.contains("M"))
             ret += "1";
         else
             ret += "0";
@@ -24,7 +24,7 @@ class Code {
         return ret;
     }
 
-    private String comp(String comp) {
+    public String comp(String comp) {
         Hashtable<String, String> comps = new Hashtable<>();
         comps.put("0",   "0101010");
         comps.put("1",   "0111111");
@@ -59,7 +59,7 @@ class Code {
         return comps.get(comp);
     }
 
-    private String jump(String jump) {
+    public String jump(String jump) {
         // Returns the "jump" mnemonic in the current C-command (8 possibilities)
         // Should be called only when commandType() is C_COMMAND
         String ret = "";

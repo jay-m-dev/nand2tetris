@@ -3,7 +3,11 @@ import java.io.FileReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Queue;
+
+import javax.naming.spi.InitialContextFactoryBuilder;
+
 import java.util.LinkedList;
+
 class Parser {
     private BufferedReader inputStream;
     private String currentCommand;
@@ -25,6 +29,9 @@ class Parser {
             System.err.format("Exception: %s%n", e);
         }
     }
+    public String getCurrentCommand() {
+        return this.currentCommand;
+    }
     public Boolean hasMoreCommands() {
         // determines if there are more commands in the input
         // the line should not be an empty line or a comment
@@ -35,14 +42,12 @@ class Parser {
         // Should be called only if hasMoreCommands returns true
         this.currentCommand = queue.poll();
     }
-    enum Command {
-        A_COMMAND,
-        C_COMMAND,
-        L_COMMAND
-    }
+   
     public Command commandType() {
-        if (this.currentCommand.startsWith("@") || isNumeric(this.currentCommand))
+        if (this.currentCommand.startsWith("@")){// || isNumeric(this.currentCommand))
+
             return Command.A_COMMAND;
+        }
         else if (this.currentCommand.matches(".*[=;].*"))
             return Command.C_COMMAND;
         else
@@ -60,8 +65,10 @@ class Parser {
     public String symbol() {
         // returns the symbol or decimal Xxx of the current command @Xxx or (Xxx)
         // Should be called only when commandType() is A_COMMAND or L_COMMAND
+        if (this.currentCommand.startsWith("@"))
+            this.currentCommand = this.currentCommand.substring(1);
         int i = Integer.parseInt(this.currentCommand);
-        return Integer.toBinaryString(i);
+        return String.format("%15s", Integer.toBinaryString(i)).replace(' ', '0');
     }
     public String dest() {
         // Returns the "dest" mnemonic in the current C-command (8 possibilities)
@@ -89,9 +96,16 @@ class Parser {
         // Should be called only when commandType() is C_COMMAND
         String ret = "null";
 
-        if (this.currentCommand.contains(";"));
+        if (this.currentCommand.contains(";"))
             ret = this.currentCommand.split(";")[1];
+            // System.out.println(this.currentCommand.split(";")[0]);
+            // System.out.println(this.currentCommand.split(";")[1]);
 
         return ret;
     }
+}
+enum Command {
+    A_COMMAND,
+    C_COMMAND,
+    L_COMMAND
 }
