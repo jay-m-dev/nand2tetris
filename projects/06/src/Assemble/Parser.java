@@ -1,10 +1,9 @@
+package Assemble;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Queue;
-
-import javax.naming.spi.InitialContextFactoryBuilder;
 
 import java.util.LinkedList;
 
@@ -68,7 +67,7 @@ class Parser {
         if (this.currentCommand.startsWith("@"))
             this.currentCommand = this.currentCommand.substring(1);
         int i = Integer.parseInt(this.currentCommand);
-        return String.format("%15s", Integer.toBinaryString(i)).replace(' ', '0');
+        return String.format("%15s", Integer.toBinaryString(i)).replace(' ', '0'); // pad with '0' on the left
     }
     public String dest() {
         // Returns the "dest" mnemonic in the current C-command (8 possibilities)
