@@ -5,18 +5,35 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-// import Parser.Command;
-
 class Assembler {
+    private static SymbolTable st = new SymbolTable();
     public static void main(String[] args) {
-        if (args != null && args.length > 0) 
+        if (args != null && args.length > 0)  {
+            buildSymbolTable(args[0]);
             assemble(args[0]);
+        }
+    }
+    public static void buildSymbolTable(String fileName) {
+        // first pass to take care of labels (Xxx)
+        Parser parser = new Parser(fileName);
+        int lineCount = 0;
+        while (parser.hasMoreCommands()) {
+            parser.advance();
+            if (parser.commandType() == Command.L_COMMAND) {
+                // add this symbol and ROM address to the symbol table
+                st.addEntry(parser.symbol(), lineCount);
+            } else {
+                lineCount++;
+            }
+        }
     }
     public static void assemble(String fileName) {
         try {
             PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("MyProg.hack")));
             Parser parser = new Parser(fileName);
+            String tempAddress;
             String line;
+            int newAddress = 16;
             Code code = new Code();
             while (parser.hasMoreCommands()) {
                 line = "";
@@ -26,6 +43,20 @@ class Assembler {
                     line += code.comp(parser.comp());
                     line += code.dest(parser.dest());
                     line += code.jump(parser.jump());
+                } else if (parser.commandType() == Command.L_COMMAND) {
+                    // don't translate L_COMMANDs (Xxx)
+                    continue;
+                } else if (parser.commandType() == Command.A_COMMAND && !parser.isNumeric(parser.symbol())) {
+                    // an A_command will start with @, not a numeric symbol means this is a label
+                    line += "0";
+                    if (!(st.contains(parser.symbol()))) {
+                        st.addEntry(parser.symbol(), newAddress);
+                        newAddress++;
+                    }
+
+                    tempAddress = Integer.toBinaryString(st.getAddress(parser.symbol()));
+                    line += tempAddress.format("%15s", tempAddress).replace(' ', '0');
+
                 } else {
                     line += "0";
                     line += parser.symbol();
