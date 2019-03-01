@@ -23,13 +23,9 @@ class Parser {
                     queue.add(line);
                 }
             }
-        // } catch (FileNotFoundException | IOException e) {
         } catch (IOException e) {
             System.err.format("Exception: %s%n", e);
         }
-    }
-    public String getCurrentCommand() {
-        return this.currentCommand;
     }
     public Boolean hasMoreCommands() {
         // determines if there are more commands in the input
@@ -43,7 +39,7 @@ class Parser {
     }
    
     public Command commandType() {
-        if (this.currentCommand.startsWith("@")){// || isNumeric(this.currentCommand))
+        if (this.currentCommand.startsWith("@")) {// || isNumeric(this.currentCommand))
 
             return Command.A_COMMAND;
         }
@@ -52,7 +48,7 @@ class Parser {
         else
             return Command.L_COMMAND;
     }
-    private Boolean isNumeric(String str)  {  
+    public Boolean isNumeric(String str)  {
         try  {  
             double d = Double.parseDouble(str);  
         }  
@@ -66,6 +62,13 @@ class Parser {
         // Should be called only when commandType() is A_COMMAND or L_COMMAND
         if (this.currentCommand.startsWith("@"))
             this.currentCommand = this.currentCommand.substring(1);
+        else if (this.currentCommand.startsWith("(")) {
+            this.currentCommand = this.currentCommand.substring(1, this.currentCommand.length() - 1);
+        }
+
+        if (!(isNumeric(this.currentCommand)))
+            return this.currentCommand;
+
         int i = Integer.parseInt(this.currentCommand);
         return String.format("%15s", Integer.toBinaryString(i)).replace(' ', '0'); // pad with '0' on the left
     }
@@ -84,10 +87,15 @@ class Parser {
         String ret = this.currentCommand;
         if (ret.contains("="))
             ret = ret.split("=")[1]; // get the second token
-        
+
+        if (ret.contains("//"))
+            ret = ret.split("//")[0].trim(); // remove inline comments
+
         // let's check if comp has a ; sign, strip it if it does
         if (ret.contains(";"))
             ret = ret.split(";")[0]; // we want the first token
+
+            System.out.println("comp:" + ret + "***");
         return ret;
     }
     public String jump() {
@@ -97,6 +105,9 @@ class Parser {
 
         if (this.currentCommand.contains(";"))
             ret = this.currentCommand.split(";")[1];
+
+        if (ret.contains("//"))
+            ret = ret.split("//")[0].trim(); // remove inline comments
             // System.out.println(this.currentCommand.split(";")[0]);
             // System.out.println(this.currentCommand.split(";")[1]);
 
