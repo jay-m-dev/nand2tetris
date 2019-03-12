@@ -1,9 +1,9 @@
-public class Main {
+public class VMTranslator {
     CodeWriter codeWriter = new CodeWriter();
     public static void main(String[] args) {
-        Main m = new Main();
-        // m.translate(args[1]);
-        m.translate("SimpleAdd.vm");
+        VMTranslator vt = new VMTranslator();
+        vt.translate(args[0]);
+        //vt.translate("SimpleAdd.vm");
     }
     public void translate(String files) {
         // assume single file first
