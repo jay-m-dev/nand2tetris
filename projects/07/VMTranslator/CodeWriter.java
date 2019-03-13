@@ -164,14 +164,71 @@ public class CodeWriter {
             if (segment.equalsIgnoreCase("constant")) {
                 line += "@" + index + "\n";
                 line += "D=A" + "\n";
+            } else if (segment.equalsIgnoreCase("local")) {
+                line += "@LCL"  + "\n";
+                line += "D=M"   + "\n";
+                line += "@" + Integer.toString(index) + "\n";
+                line += "A=D+A" + "\n";
+                line += "D=M"   + "\n";
+            } else if (segment.equalsIgnoreCase("argument")) {
+                line += "@ARG"  + "\n";
+                line += "D=M"   + "\n";
+                line += "@" + Integer.toString(index) + "\n";
+                line += "A=D+A" + "\n";
+                line += "D=M"   + "\n";
+            } else if (segment.equalsIgnoreCase("this")) {
+                line += "@THIS" + "\n";
+                line += "D=M"   + "\n";
+                line += "@" + Integer.toString(index) + "\n";
+                line += "A=D+A" + "\n";
+                line += "D=M"   + "\n";
+            } else if (segment.equalsIgnoreCase("that")) {
+                line += "@THAT" + "\n";
+                line += "D=M"   + "\n";
+                line += "@" + Integer.toString(index) + "\n";
+                line += "A=D+A" + "\n";
+                line += "D=M"   + "\n";
+            } else if (segment.equalsIgnoreCase("temp")) {
+                line += "@R5"   + "\n";
+                line += "D=A"   + "\n";
+                line += "@" + Integer.toString(index) + "\n";
+                line += "A=D+A" + "\n";
+                line += "D=M"   + "\n";
             }
+            // PUSH
             line += "@SP"   + "\n";
             line += "A=M"   + "\n";
             line += "M=D"   + "\n";
             line += "@SP"   + "\n";
             line += "M=M+1" + "\n"; // select the address at SP, and increment the value at SP
         } else if (command == Command.C_POP) {
-            // SP(false);
+            if (segment.equalsIgnoreCase("local")) {
+                line += "@LCL" + "\n";
+                line += "D=M"  + "\n";
+                line += "@" + Integer.toString(index) + "\n";
+                line += "D=D+A" + "\n";
+            } else if (segment.equalsIgnoreCase("argument")) {
+                line += "@ARG" + "\n";
+                line += "D=M"  + "\n";
+                line += "@" + Integer.toString(index) + "\n";
+                line += "D=D+A" + "\n";
+            } else if (segment.equalsIgnoreCase("this")) {
+                line += "@THIS" + "\n";
+                line += "D=M"   + "\n";
+                line += "@" + Integer.toString(index) + "\n";
+                line += "D=D+A" + "\n";
+            } else if (segment.equalsIgnoreCase("that")) {
+                line += "@THAT" + "\n";
+                line += "D=M"   + "\n";
+                line += "@" + Integer.toString(index) + "\n";
+                line += "D=D+A" + "\n";
+            } else if (segment.equalsIgnoreCase("temp")) {
+                line += "@R5"   + "\n";
+                line += "D=A"   + "\n";
+                line += "@" + Integer.toString(index) + "\n";
+                line += "D=D+A" + "\n";
+            }
+            // POP
             line += "@R13"  + "\n"; // temporarily use R13 to store the current value
             line += "M=D"   + "\n";
             line += "@SP"   + "\n";

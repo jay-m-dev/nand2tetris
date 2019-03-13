@@ -13,7 +13,8 @@ public class VMTranslator {
             parser.advance(); // do we need to advance the first time?
             System.out.println(parser.getCurrentCommand());
             codeWriter.setFileName(files);
-            if (parser.commandType() == Command.C_PUSH) {
+            if (parser.commandType() == Command.C_PUSH || 
+                parser.commandType() == Command.C_POP) {
                 System.out.println("push");
                 codeWriter.WritePushPop(parser.commandType(), parser.arg1(), parser.arg2());
             } else if (parser.commandType() == Command.C_ARITHMETIC) {
