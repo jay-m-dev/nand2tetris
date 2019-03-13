@@ -201,6 +201,9 @@ public class CodeWriter {
                     line += "@THAT" + "\n";
                 }
                 line += "D=M"   + "\n";
+            } else if (segment.equalsIgnoreCase("static")) {
+                line += "@" + inputFile.replaceAll(".*/", "") + Integer.toString(index) + "\n";
+                line += "D=M" + "\n";
             }
             // PUSH
             line += "@SP"   + "\n";
@@ -240,6 +243,9 @@ public class CodeWriter {
                 } else {
                     line += "@THAT" + "\n";
                 }
+                line += "D=A" + "\n";
+            } else if (segment.equalsIgnoreCase("static")) {
+                line += "@" + inputFile.replaceAll(".*/", "") + Integer.toString(index) + "\n";
                 line += "D=A" + "\n";
             }
             // POP
