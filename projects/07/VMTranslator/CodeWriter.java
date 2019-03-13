@@ -132,8 +132,8 @@ public class CodeWriter {
             line += "M=D|M"  + "\n";
         } else if (command.equalsIgnoreCase("not")) {
             line += "@SP"    + "\n";
-            line += "A=M-1" + "\n";
-            line += "M=!M" + "\n";
+            line += "A=M-1"  + "\n";
+            line += "M=!M"   + "\n";
         }
 
         out.println(line);
@@ -194,6 +194,13 @@ public class CodeWriter {
                 line += "@" + Integer.toString(index) + "\n";
                 line += "A=D+A" + "\n";
                 line += "D=M"   + "\n";
+            } else if (segment.equalsIgnoreCase("pointer")) {
+                if (index == 0) {
+                    line += "@THIS" + "\n";
+                } else {
+                    line += "@THAT" + "\n";
+                }
+                line += "D=M"   + "\n";
             }
             // PUSH
             line += "@SP"   + "\n";
@@ -227,6 +234,13 @@ public class CodeWriter {
                 line += "D=A"   + "\n";
                 line += "@" + Integer.toString(index) + "\n";
                 line += "D=D+A" + "\n";
+            } else if (segment.equalsIgnoreCase("pointer")) {
+                if (index == 0) {
+                    line += "@THIS" + "\n";
+                } else {
+                    line += "@THAT" + "\n";
+                }
+                line += "D=A" + "\n";
             }
             // POP
             line += "@R13"  + "\n"; // temporarily use R13 to store the current value
