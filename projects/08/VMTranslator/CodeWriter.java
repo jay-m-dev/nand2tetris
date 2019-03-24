@@ -11,6 +11,9 @@ public class CodeWriter {
     // int stackBase = 256;
     private Deque<String> argument = new ArrayDeque<String>();
     private static int counter = 0;
+    private String funcName = "";
+
+
     public CodeWriter() {
         try {
             out = new PrintWriter(new BufferedWriter(new FileWriter("MyProg.asm")));
@@ -191,6 +194,121 @@ public class CodeWriter {
 
         out.println(line);
 
+    }
+
+    public void writeLabel(String label) {
+        String line = "(" + this.funcName + "$" + label +  ")" + "\n";
+
+        out.println(line);
+    }
+
+    public void writeFunction(String functionName, int numLocals) {
+        this.funcName = functionName; // store the functin name
+        String line = "";
+        line += "(" + functionName + ")" + "\n";
+        line += "@SP"                    + "\n";
+        line += "A=M"                    + "\n";
+        for (int i = 0; i < numLocals; i++) {
+            line += "M=0"   + "\n";
+            line += "A=A+1" + "\n";
+        }
+        line += "D=A" + "\n";
+        line += "@SP" + "\n";
+        line += "M=D" + "\n";
+
+        out.println(line);
+    }
+
+    public void writeGoto(String label) {
+        String line = "";
+        line += "@" + this.funcName + "$" + label + "\n";
+        line += "0;JMP"                           + "\n";
+
+        out.println(line);
+    }
+
+    public void writeIf(String label) {
+        String line = "";
+        line += "@SP"    + "\n";
+        line += "AM=M-1" + "\n";
+        line += "D=M"    + "\n";
+        line += "@" + this.funcName + "$" + label + "\n";
+        line += "D;JNE" + "\n";
+
+        out.println(line);
+    }
+
+    public void writeCall(String functionName, int numArgs) {
+        String line = "";
+        this.counter++;
+        // SP -> R13
+        line += "@SP"      + "\n";
+        line += "D=M"      + "\n";
+        line += "@R13"     + "\n";
+        line += "M=D"      + "\n";
+        // @RET -> *SP
+        line += "@RET." + this.counter + "\n";
+        line += "D=A"      + "\n";
+        line += "@SP"      + "\n";
+        line += "A=M"      + "\n";
+        line += "M=D"      + "\n";
+        // SP++
+        line += "@SP"      + "\n";
+        line += "M=M+1"    + "\n";
+        // LCL -> *SP
+        line += "@LCL"     + "\n";
+        line += "D=M"      + "\n";
+        line += "@SP"      + "\n";
+        line += "A=M"      + "\n";
+        line += "M=D"      + "\n";
+        // SP++
+        line += "@SP"      + "\n";
+        line += "M=M+1"    + "\n";
+        // ARG -> *SP
+        line += "@ARG"     + "\n";
+        line += "D=M"      + "\n";
+        line += "@SP"      + "\n";
+        line += "A=M"      + "\n";
+        line += "M=D"      + "\n";
+        // SP++
+        line += "@SP"      + "\n";
+        line += "M=M+1"    + "\n";
+        // THIS -> *SP
+        line += "@THIS"    + "\n";
+        line += "D=M"      + "\n";
+        line += "@SP"      + "\n";
+        line += "A=M"      + "\n";
+        line += "M=D"      + "\n";
+        // SP++
+        line += "@SP"      + "\n";
+        line += "M=M+1"    + "\n";
+        // THAT -> *SP
+        line += "@THAT"    + "\n";
+        line += "D=M"      + "\n";
+        line += "@SP"      + "\n";
+        line += "A=M"      + "\n";
+        line += "M=D"      + "\n";
+        // SP++
+        line += "@SP"      + "\n";
+        line += "M=M+1"    + "\n";
+        // R13 - n -> ARG
+        line += "@R13"     + "\n";
+        line += "D=M"      + "\n";
+        line += "@"        + numArgs + "" + "\n";
+        line += "D=D-A"    + "\n";
+        line += "@ARG"     + "\n";
+        line += "M=D"      + "\n";
+        // SP -> LCL
+        line += "@SP"      + "\n";
+        line += "D=M"      + "\n";
+        line += "@LCL"     + "\n";
+        line += "M=D"      + "\n";
+        line += "@" + functionName + "" + "\n";
+        line += "0;JMP"    + "\n";
+        line += "(RET." + this.counter + ")" + "\n";
+
+        out.println(line);
+        
     }
 
     // public void add() {
