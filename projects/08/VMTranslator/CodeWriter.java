@@ -17,9 +17,10 @@ public class CodeWriter {
     public CodeWriter() {
         try {
             out = new PrintWriter(new BufferedWriter(new FileWriter("MyProg.asm")));
+            // no need to initialize
             // will be taken care of by Sys.init
             // out.println("@256" + "\n" + "D=A" + "\n" + "@SP" + "\n" + "M=D" + "\n"); // set SP
-            writeInit();
+            // writeInit();
         } catch (IOException e) {
             System.err.format("Exception: %s%n", e);
         }
