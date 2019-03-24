@@ -17,7 +17,9 @@ public class CodeWriter {
     public CodeWriter() {
         try {
             out = new PrintWriter(new BufferedWriter(new FileWriter("MyProg.asm")));
-            out.println("@256" + "\n" + "D=A" + "\n" + "@SP" + "\n" + "M=D" + "\n"); // set SP
+            // will be taken care of by Sys.init
+            // out.println("@256" + "\n" + "D=A" + "\n" + "@SP" + "\n" + "M=D" + "\n"); // set SP
+            writeInit();
         } catch (IOException e) {
             System.err.format("Exception: %s%n", e);
         }
@@ -142,6 +144,23 @@ public class CodeWriter {
         out.println(line);
     }
 
+    public void writeInit() {
+        String line = "";
+        line += "@256" + "\n";
+        line += "D=A"  + "\n";
+        line += "@SP"  + "\n";
+        line += "M=D"  + "\n";
+
+        out.println(line);
+        
+        writeCall("Sys.init", 0);
+
+        line = "0;JMP" + "\n";
+
+        out.println(line);
+
+    }
+
     public void writeReturn() {
         String line = "";
         // *(LCL - 5) -> R13
@@ -233,7 +252,7 @@ public class CodeWriter {
         line += "AM=M-1" + "\n";
         line += "D=M"    + "\n";
         line += "@" + this.funcName + "$" + label + "\n";
-        line += "D;JNE" + "\n";
+        line += "D;JNE"  + "\n";
 
         out.println(line);
     }

@@ -20,7 +20,26 @@ public class VMTranslator {
             } else if (parser.commandType() == Command.C_ARITHMETIC) {
                 System.out.println("arithmetic");
                 codeWriter.writeArithmetic(parser.getCurrentCommand());
+            } else if (parser.commandType() == Command.C_LABEL) {
+                System.out.println("label");
+                codeWriter.writeLabel(parser.arg1());
+            } else if (parser.commandType() == Command.C_GOTO) {
+                System.out.println("goto");
+                codeWriter.writeGoto(parser.arg1());
+            } else if (parser.commandType() == Command.C_IF) {
+                System.out.println("if");
+                codeWriter.writeIf(parser.arg1());
+            } else if (parser.commandType() == Command.C_FUNCTION) {
+                System.out.println("function");
+                codeWriter.writeFunction(parser.arg1(), parser.arg2());
+            } else if (parser.commandType() == Command.C_RETURN) {
+                System.out.println("return");
+                codeWriter.writeReturn();
+            } else if (parser.commandType() == Command.C_CALL) {
+                System.out.println("call");
+                codeWriter.writeCall(parser.arg1(), parser.arg2());
             }
+
         }
         codeWriter.Close();
 
