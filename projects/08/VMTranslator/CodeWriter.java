@@ -139,23 +139,77 @@ public class CodeWriter {
         out.println(line);
     }
 
-    public void add() {
-        // 2 pops 1 push
-        WritePushPop(Command.C_POP, "add", 0 );
-        out.println("D=M" + "\n"); // M is the value at the POPPED register
-        WritePushPop(Command.C_POP, "add", 0 );
-        out.println("D=D+M" + "\n"); // D is the D selected on the previous M, M is the value at the POPPED register
-        WritePushPop(Command.C_PUSH, "add", 0);
+    public void writeReturn() {
+        String line = "";
+        // *(LCL - 5) -> R13
+        line += "@LCL"   + "\n";
+        line += "D=M"    + "\n";
+        line += "@5"     + "\n";
+        line += "A=D-A"  + "\n";
+        line += "D=M"    + "\n";
+        line += "@R13"   + "\n";
+        line += "M=D"    + "\n";
+        // *(SP - 1) -> *ARG
+        line += "@SP"    + "\n";
+        line += "A=M-1"  + "\n";
+        line += "D=M"    + "\n";
+        line += "@ARG"   + "\n";
+        line += "A=M"    + "\n";
+        line += "M=D "   + "\n";
+        // ARG + 1 -> SP
+        line += "D=A+1"  + "\n";
+        line += "@SP"    + "\n";
+        line += "M=D"    + "\n";
+        // *(LCL - 1) -> THAT; LCL--
+        line += "@LCL"   + "\n";
+        line += "AM=M-1" + "\n";
+        line += "D=M"    + "\n";
+        line += "@THAT"  + "\n";
+        line += "M=D"    + "\n";
+        // *(LCL - 1) -> THIS; LCL--
+        line += "@LCL"   + "\n";
+        line += "AM=M-1" + "\n";
+        line += "D=M"    + "\n";
+        line += "@THIS"  + "\n";
+        line += "M=D"    + "\n";
+        // *(LCL - 1) -> ARG; LCL--
+        line += "@LCL"   + "\n";
+        line += "AM=M-1" + "\n";
+        line += "D=M"    + "\n";
+        line += "@ARG"   + "\n";
+        line += "M=D"    + "\n";
+        // *(LCL - 1) -> LCL
+        line += "@LCL"   + "\n";
+        line += "A=M-1"  + "\n";
+        line += "D=M"    + "\n";
+        line += "@LCL"   + "\n";
+        line += "M=D"    + "\n";
+        // R13 -> A
+        line += "@R13"   + "\n";
+        line += "A=M"    + "\n";
+        line += "0;JMP"  + "\n";
+
+        out.println(line);
+
     }
 
-    public void sub() {
-        // 2 pops 1 push
-        WritePushPop(Command.C_POP, "sub", 0 );
-        out.println("D=M" + "\n"); // M is the value at the POPPED register
-        WritePushPop(Command.C_POP, "sub", 0 );
-        out.println("D=D-M" + "\n"); // D is the D selected on the previous M, M is the value at the POPPED register
-        WritePushPop(Command.C_PUSH, "sub", 0);
-    }
+    // public void add() {
+    //     // 2 pops 1 push
+    //     WritePushPop(Command.C_POP, "add", 0 );
+    //     out.println("D=M" + "\n"); // M is the value at the POPPED register
+    //     WritePushPop(Command.C_POP, "add", 0 );
+    //     out.println("D=D+M" + "\n"); // D is the D selected on the previous M, M is the value at the POPPED register
+    //     WritePushPop(Command.C_PUSH, "add", 0);
+    // }
+
+    // public void sub() {
+    //     // 2 pops 1 push
+    //     WritePushPop(Command.C_POP, "sub", 0 );
+    //     out.println("D=M" + "\n"); // M is the value at the POPPED register
+    //     WritePushPop(Command.C_POP, "sub", 0 );
+    //     out.println("D=D-M" + "\n"); // D is the D selected on the previous M, M is the value at the POPPED register
+    //     WritePushPop(Command.C_PUSH, "sub", 0);
+    // }
 
     public void WritePushPop(Command command, String segment, int index) {
         String line = "";
