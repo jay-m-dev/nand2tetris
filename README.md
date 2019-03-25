@@ -9,7 +9,9 @@ On the software side of things, a Virtual Machine translator is implemented in j
 NOTE:
 
 use these lines in .git/config to prevent fastforwards when merging into master.
+
 [branch "master"]
+
     mergeoptions = --no-ff
 
 ChangeLog:
