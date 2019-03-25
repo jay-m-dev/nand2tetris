@@ -11,6 +11,7 @@ NOTE:
 use these lines in .git/config to prevent fastforwards when merging into master.
 
 [branch "master"]
+
     mergeoptions = --no-ff
 
 ChangeLog:
