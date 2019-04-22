@@ -1,23 +1,41 @@
 package Compiler;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.StreamTokenizer;
+import java.io.*;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class JackTokenizer {
     JackTokenizer jt;
     StreamTokenizer st;
-    private BufferedReader inputStream;
+    private Reader inputStream;
     private String currentToken;
     private String[] tokens;
     private Queue<String> queue = new LinkedList<>();
 
-    public JackTokenizer(BufferedReader r) {
-        this.inputStream = r;
-        st = new StreamTokenizer(this.inputStream);
+    public JackTokenizer(Reader reader) {
+//        this.inputStream = r;
+        try {
+            int token;
+            st = new StreamTokenizer(reader);
+            st.eolIsSignificant(false);
+            //System.out.println(st);
+            while ((token = st.nextToken()) != StreamTokenizer.TT_EOF) {
+                if (st.ttype == StreamTokenizer.TT_WORD) {
+                    System.out.println(st.sval);
+                    queue.add(st.sval);
+                }
+                else if (st.ttype == StreamTokenizer.TT_NUMBER) {
+                    System.out.println(st.nval);
+                    queue.add(Double.toString(st.nval));
+                }
+                else {
+                    System.out.println((char) token);
+                    queue.add(Integer.toString(token));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // iterate over st and work with Jack-specific keywords and syntax
     }
     // public JackTokenizer(String fileName) {
@@ -111,6 +129,9 @@ public class JackTokenizer {
     public void advance() { currentToken = queue.poll(); }
 
     public TokenType tokenType() {
+        if (currentToken == null) {
+            System.out.println("null here");
+        }
         if (currentToken.matches("class|constructor|method|function|"
                                     + "int|boolean|char|void|"
                                     + "var|static|field|"
@@ -131,7 +152,7 @@ public class JackTokenizer {
 
     // don't think I need keywordType
     public String keyWord() {
-        return currentToken.toUpperCase();
+        return currentToken;
     }
 
     public char symbol() {
