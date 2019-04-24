@@ -30,159 +30,171 @@ public class CompilationEngine {
     /* 'class' className '{' classVarDec* subroutineDec* '}' */
     public void compileClass() {
         out.println("<class>");
+        int level = 1;
+        jt.advance();
+        System.out.println("in compileClass 1:" + jt.keyWord() + "###");
         // 'class' keyword
-        if (jt.tokenType() == TokenType.KEYWORD && jt.keyWord() == "class") {
-            printKeyword(1);
+        if (jt.tokenType() == TokenType.KEYWORD && jt.keyWord().equals("class")) {
+            System.out.println("in compileClass 2:" + jt.keyWord());
+            printKeyword(level);
         }
         // className
-        printIdentifier(1);
+        printIdentifier(level);
         // '{'
-        printSymbol(1);
+        printSymbol(level);
         // classVarDec*
-        compileClassVarDec();
+        compileClassVarDec(level);
         // subroutineDec*
-        compileSubroutine();
+        compileSubroutine(level);
         // '}'
-        printSymbol(1);
+        printSymbol(level);
         out.println("</class>");
         out.close();
     }
 
     /* ('static' | 'field') type varName(',' varName)* ';' */
-    public void compileClassVarDec() {
-        out.println("  <classVarDec> ");
+    public void compileClassVarDec(int level) {
+        out.println(indent(level) + "<classVarDec> ");
         // ('static' | 'field')
         if (jt.tokenType() == TokenType.KEYWORD && jt.keyWord().matches("static|field")) {
-            printKeyword(1);
+            printKeyword(level + 1);
         }
         // type
-        printType(1);
+        printType(level + 1);
         // varName(',' varName)*
         do {
             // ',', should not be ',' at the first iteration
+            // if (jt.tokenType() == TokenType.SYMBOL && jt.symbol() == ',') {
             if (jt.tokenType() == TokenType.SYMBOL && jt.symbol() == ',') {
-                printSymbol(1);
+                printSymbol(level + 1);
             }
             // varName
-            printIdentifier(1);
+            printIdentifier(level + 1);
             // if ',' follows the identifier, keep iterating
         } while (jt.tokenType() == TokenType.SYMBOL && jt.symbol() == ',');
 
         // ';'
         // assumes the previous loop exited by printing an identifier and not the ',' symbol
-        printSymbol(1);
+        printSymbol(level + 1);
 
-        out.println("  </classVarDec>");
+        out.println(indent(level) + "</classVarDec>");
     }
 
     /* ('constructor' | 'function' | 'method') ('void' | type) subroutineName '(' parameterList ')' subroutineBody */
-    public void compileSubroutine() {
-        out.println("  <subroutineDec> ");
+    public void compileSubroutine(int level) {
+        out.println(indent(level) + "<subroutineDec> ");
         while (jt.tokenType() == TokenType.KEYWORD && jt.keyWord().matches("constructor|function|method")) {
             // if (jt.tokenType() == TokenType.KEYWORD && jt.keyWord().equals("void")) {
             // }
             // ('constructor' | 'function' | 'method')
-            printKeyword(2);
+            printKeyword(level + 1);
             // ('void' | type)
-            printType(2);
+            printType(level + 1);
             // subroutineName
-            printIdentifier(2);
+            printIdentifier(level + 1);
             // '('
-            printSymbol(2);
+            printSymbol(level + 1);
             // '(' parameterList ')'
-            compileParameterList();
+            compileParameterList(level + 1);
             // ')'
-            printSymbol(2);
+            printSymbol(level + 1);
 
         }
-        out.println("  </subroutineDec>");
-        compileSubroutineBody();
+        compileSubroutineBody(level + 1);
+        out.println(indent(level) + "</subroutineDec>");
     }
 
     /* '{' varDec* statements '}' */
-    public void compileSubroutineBody() {
-        out.println("    <subroutineBody>");
+    public void compileSubroutineBody(int level) {
+        out.println(indent(level) + "<subroutineBody>");
         // '{'
-        printSymbol(3);
+        printSymbol(level + 1);
         // varDec*
-        compileVarDec();
+        compileVarDec(level + 1);
+        // statements
+        compileStatements(level + 1);
+        // '}'
+        printSymbol(level + 1);
 
-        compileStatements();
-
-        out.println("    </subroutineBody>");
+        out.println(indent(level) + "</subroutineBody>");
     }
 
     /* statements* */
-    public void compileStatements() {
-        out.println("      <statements>");
+    public void compileStatements(int level) {
+        out.println(indent(level) + "<statements>");
         while (jt.tokenType() == TokenType.KEYWORD && jt.keyWord().matches("let|if|while|do|return")) {
             if (jt.tokenType() == TokenType.KEYWORD) {
                 switch(jt.keyWord()) {
                     case "let":
-                        compileLet(5);
+                        compileLet(level + 2);
                         break;
                     case "if":
-                        compileIf(5);
+                        compileIf(level + 2);
                         break;
                     case "while":
-                        compileWhile(5);
+                        compileWhile(level + 2);
                         break;
                     case "do":
-                        compileDo(5);
+                        compileDo(level + 2);
                         break;
                     case "return":
-                        compileReturn();
+                        compileReturn(level + 2);
                         break;
                 }
             }
         }
 
-        out.println("      </statements>");
+        out.println(indent(level) + "</statements>");
     }
 
     /* 'var' type varName(',' varName)* ';' */
-    public void compileVarDec() {
-        out.println("      <varDec>");
-        if (!(jt.tokenType() == TokenType.KEYWORD && jt.keyWord() == "var")) {
+    public void compileVarDec(int level) {
+        out.println(indent(level) + "<varDec>");
+        if (!(jt.tokenType() == TokenType.KEYWORD && jt.keyWord().equals("var"))) {
             // no variables found
+            out.println(indent(level) + "</varDec>");
             return;
         }
         // 'var'
-        printKeyword(4);
+        printKeyword(level + 1);
         do {
             // ',', should not be ',' at the first iteration
             if (jt.tokenType() == TokenType.SYMBOL && jt.symbol() == ',') {
-                printSymbol(1);
+                printSymbol(level + 1);
             }
             // type
-            printType(4);
+            printType(level + 1);
             // varName
-            printIdentifier(4);
+            printIdentifier(level + 1);
         } while (jt.tokenType() == TokenType.SYMBOL && jt.symbol() == ',');
+        // ';'
+        printSymbol(level + 1);
 
-        out.println("      </varDec>");
+        out.println(indent(level) + "</varDec>");
     }
 
     /* ((type varName)(',' type varName)*)? */
-    public void compileParameterList() {
-        out.println("    <subroutineDec>");
+    public void compileParameterList(int level) {
+        out.println(indent(level) + "<parameterList>");
         // if there are parameters, the first token type will be a Keyword or an Identifier (varName = className)
-        if (!(jt.tokenType() == TokenType.KEYWORD || jt.tokenType() == TokenType.IDENTIFIER))
+        if (!(jt.tokenType() == TokenType.KEYWORD || jt.tokenType() == TokenType.IDENTIFIER)) {
+            out.println(indent(level) + "</parameterList>");
             return;
+        }
         do {
             // ',', should not be ',' at the first iteration
             if (jt.tokenType() == TokenType.SYMBOL && jt.symbol() == ',') {
                 // might not need the if here, printSymbol will not print if the tokenType is not a symbol!
-                printSymbol(3);
+                printSymbol(level + 1);
             }
             // type
-            printType(3);
+            printType(level + 1);
             // varName
-            printIdentifier(3);
+            printIdentifier(level + 1);
 
         } while (jt.tokenType() == TokenType.SYMBOL && jt.symbol() == ',');
 
-        out.println("    </subroutineDec>");
+        out.println(indent(level) + "</parameterList>");
     }
 
     /* term (op term)* */
@@ -192,7 +204,7 @@ public class CompilationEngine {
         printTerm(level);
 
         // (op term)*
-        while (jt.tokenType() == TokenType.SYMBOL) {
+        while (jt.tokenType() == TokenType.SYMBOL && Character.toString(jt.symbol()).matches("/&-*+|<>=")) {
             // op symbol
             printSymbol(level);
             // term
@@ -217,25 +229,30 @@ public class CompilationEngine {
             printKeyword(level);
         } else if (jt.tokenType() == TokenType.IDENTIFIER) {
             // varName|varName '[' expression ']'|subroutineCall
-            printIdentifier(level); // could be varName|subroutineCall
+            printIdentifier(level); ///1 SquareGame
             if (jt.tokenType() == TokenType.SYMBOL) {
                 if (jt.symbol() == '[') {
-                    // varName '['
+                    // '['
                     printSymbol(level);
-                } else if (jt.symbol() == '(') {
+                    // expression
+                    compileExpression(level);
+                    // ']'
+                    printSymbol(level);
+                } else if (jt.symbol() == '.') {
                     // subroutineCall
-                    compileSubroutineCall(level);
+                    compileSubroutineCall(level); ///2 '.'
                 }
             }
         } else if (jt.tokenType() == TokenType.SYMBOL) {
             // '(' expression ')'|unaryOp term
             if (jt.symbol() == '(') {
-                // '('
-                printSymbol(level);
+                // compileExpression takes care of '(' and ')'
+                // // '('
+                // printSymbol(level);
                 // expression
                 compileExpression(level);
-                // ')'
-                printSymbol(level);
+                // // ')'
+                // printSymbol(level);
             } else if (jt.symbol() == '-' || jt.symbol() == '~') {
                 // unaryOp
                 printSymbol(level);
@@ -248,32 +265,45 @@ public class CompilationEngine {
 
     /* subroutineName '(' expressionList ')' | (className | varName) '.' subroutineName '(' expressionList ')' */
     public void compileSubroutineCall(int level) {
+        // out.println(indent(level-1) + "<subroutineCall>");
         // subroutineName already printed by caller
+        if (jt.tokenType() == TokenType.IDENTIFIER) {
+            printIdentifier(level);
+        }
         // symbol can be '(' (for subroutineName) or '.' (for className|varName)
         if (jt.symbol() == '(') {
             printSymbol(level);
             // expressionList
-            compileExpressionList();
+            compileExpressionList(level + 1);
             // ')'
             printSymbol(level);
         } else if (jt.symbol() == '.') {
             printSymbol(level);
             // subroutineName
             printIdentifier(level);
+            // '('
+            printSymbol(level);
+            // expressionList
+            compileExpressionList(level + 1);
+            // ')'
+            printSymbol(level);
             // '(' expressionList ')'
-            compileSubroutineCall(level);
+            // compileSubroutineCall(level);
         }
+
+        // out.println(indent(level-1) + "</subroutineCall>");
 
     }
 
     /* (expression (',' expression)*)? */
-    public void compileExpressionList() {
+    public void compileExpressionList(int level) {
         do {
             // ',' should not be there at the first iteration
             if (jt.tokenType() == TokenType.SYMBOL && jt.symbol() == ',') {
-                printSymbol(7);
+                // printSymbol(7);
+                printSymbol(level);
             }
-            compileExpression(7); // indented one more than expression
+            compileExpression(level); // indented one more than expression
         } while (jt.tokenType() == TokenType.SYMBOL && jt.symbol() == ',');
     }
 
@@ -287,7 +317,7 @@ public class CompilationEngine {
         // ';'
         printSymbol(level);
 
-        out.println(indent(level-1) + "<doStatement>");
+        out.println(indent(level-1) + "</doStatement>");
     }
 
     /* 'let' varName ('[' expression ']')? '=' expression ';' */
@@ -302,15 +332,16 @@ public class CompilationEngine {
         if (jt.tokenType() == TokenType.SYMBOL && jt.symbol() == '[') {
             printSymbol(level);
             // expression
-            compileExpression(level);
+            compileExpression(level + 1);
             // ']'
             printSymbol(level);
         }
         // '='
         printSymbol(level);
         // expression
-        compileExpression(level);
+        compileExpression(level + 1);
         // ';'
+        System.out.println("should be ; " + jt.symbol());
         printSymbol(level);
         out.println(indent(level-1) + "</letStatement>");
     }
@@ -323,21 +354,32 @@ public class CompilationEngine {
         // '('
         printSymbol(level);
         // expression
-        compileExpression(level);
+        compileExpression(level + 1);
         // ')'
         printSymbol(level);
         // '{'
         printSymbol(level);
         // statements
-        compileStatements();
+        compileStatements(level);
         // '}'
         printSymbol(level);
 
-        out.println(indent(level-1) + "<whileStatement>");
+        out.println(indent(level-1) + "</whileStatement>");
     }
 
-    public void compileReturn() {
+    /* 'return' expression? ';' */
+    public void compileReturn(int level) {
+        out.println(indent(level-1) + "<returnStatement>");
+        // 'return'
+        printKeyword(level);
+        // expression (if any)
+        if (!(jt.tokenType() == TokenType.SYMBOL && jt.symbol() == ';')) {
+            compileExpression(level + 1);
+        }
+        // ';'
+        printSymbol(level);
 
+        out.println(indent(level-1) + "</returnStatement>");
     }
 
     /* 'if' '(' expression ')' '{' statements '}' */
@@ -348,29 +390,17 @@ public class CompilationEngine {
         // '('
         printSymbol(level);
         // expression
-        compileExpression(level);
+        compileExpression(level + 1);
         // ')'
         printSymbol(level);
         // '{'
         printSymbol(level);
         // statements
-        compileStatements();
+        compileStatements(level);
         // '}'
         printSymbol(level);
 
         out.println(indent(level-1) + "</ifStatement>");
-    }
-
-    public void CompileExpression() {
-
-    }
-
-    public void CompileTerm() {
-
-    }
-
-    public void CompileExpressionList() {
-
     }
 
     private void printType(int level) {
@@ -386,22 +416,24 @@ public class CompilationEngine {
 
     private String indent(int level) {
         String indent = "  ";
-        if (level == 2)
-            indent += indent; // double the indentation level
-        else if (level == 3)
-            indent += indent + indent;
-        else if (level == 4)
-            indent += indent + indent + indent;
-        else if (level == 5)
-            indent += indent + indent + indent + indent;
-        else if (level == 6)
-            indent += indent + indent + indent + indent + indent;
+        //indent = indent.repeat(level);
+        // if (level == 2)
+        //     indent += indent; // double the indentation level
+        // else if (level == 3)
+        //     indent += indent + indent;
+        // else if (level == 4)
+        //     indent += indent + indent + indent;
+        // else if (level == 5)
+        //     indent += indent + indent + indent + indent;
+        // else if (level == 6)
+        //     indent += indent + indent + indent + indent + indent;
 
-        return indent;
+        return indent.repeat(level);
     }
 
     private void printKeyword(int level) {
         if (jt.tokenType() == TokenType.KEYWORD) {
+            System.out.println("in printKeyword:" + jt.keyWord());
             out.println(indent(level) + "<keyword> " + jt.keyWord() + " </keyword>");
             jt.advance();
         } else {
@@ -410,6 +442,7 @@ public class CompilationEngine {
     }
 
     private void printSymbol(int level) {
+        System.out.println("printSymbol type: " + jt.tokenType());
         if (jt.tokenType() == TokenType.SYMBOL) {
             out.println(indent(level) + "<symbol> " + jt.symbol() + " </symbol>");
             jt.advance();
@@ -420,7 +453,7 @@ public class CompilationEngine {
 
     private void printIdentifier(int level) {
         if (jt.tokenType() == TokenType.IDENTIFIER) {
-            out.println(indent(level) + "<identifier>" + jt.identifier() + " </identifier>");
+            out.println(indent(level) + "<identifier> " + jt.identifier() + " </identifier>");
             jt.advance();
         } else {
             // wrong structure, error out: identifier expected

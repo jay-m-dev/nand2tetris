@@ -17,20 +17,20 @@ public class JackTokenizer {
         try {
             int token;
             st = new StreamTokenizer(reader);
-            st.eolIsSignificant(false);
+            st.ordinaryChar('.');
             //System.out.println(st);
             while ((token = st.nextToken()) != StreamTokenizer.TT_EOF) {
                 if (st.ttype == StreamTokenizer.TT_WORD) {
-                    System.out.println(st.sval);
                     queue.add(st.sval);
+                    System.out.println(st.sval);
                 }
                 else if (st.ttype == StreamTokenizer.TT_NUMBER) {
-                    System.out.println(st.nval);
                     queue.add(Double.toString(st.nval));
+                    System.out.println(st.nval);
                 }
                 else {
-                    System.out.println((char) token);
-                    queue.add(Integer.toString(token));
+                    queue.add(Character.toString((char) token));
+                    System.out.println(Character.toString((char) token));
                 }
             }
         } catch (IOException e) {
@@ -129,9 +129,6 @@ public class JackTokenizer {
     public void advance() { currentToken = queue.poll(); }
 
     public TokenType tokenType() {
-        if (currentToken == null) {
-            System.out.println("null here");
-        }
         if (currentToken.matches("class|constructor|method|function|"
                                     + "int|boolean|char|void|"
                                     + "var|static|field|"
@@ -139,7 +136,8 @@ public class JackTokenizer {
                                     + "true|false|null|"
                                     + "this")) {
             return TokenType.KEYWORD;
-        } else if ("()[]{},;=.+-*/&|~<>".indexOf(currentToken) != -1) {
+        // } else if ("()[]{},;=.+-*/&|~<>".matches(currentToken)) {
+        } else if (currentToken.matches("[(){},;=.+*-|/&~<>]")) {
             return TokenType.SYMBOL;
         } else if (isInteger(currentToken)) {
             return TokenType.INT_CONST;

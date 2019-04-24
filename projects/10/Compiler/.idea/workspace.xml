@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="65824d5f-5961-44ac-8930-836d4ec09813" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Main.jack.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Main.jack.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Compiler/CompilationEngine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Compiler/CompilationEngine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Compiler/JackTokenizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Compiler/JackTokenizer.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -19,20 +20,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/Compiler/CompilationEngine.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="287" column="24" selection-start-line="287" selection-start-column="24" selection-end-line="287" selection-end-column="24" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Compiler/JackAnalyzer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="13" selection-start-column="13" selection-end-column="13" />
+            <state relative-caret-position="152">
+              <caret line="9" column="35" selection-start-line="9" selection-start-column="35" selection-end-line="9" selection-end-column="35" />
             </state>
           </provider>
         </entry>
@@ -40,8 +32,24 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Compiler/JackTokenizer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="380">
-              <caret line="147" column="8" selection-start-line="147" selection-start-column="8" selection-end-line="147" selection-end-column="8" />
+            <state relative-caret-position="1166">
+              <caret line="180" selection-start-line="180" selection-end-line="180" />
+              <folding>
+                <element signature="e#6519#6520#0" expanded="true" />
+                <element signature="e#6592#6593#0" expanded="true" />
+                <element signature="e#6661#6662#0" expanded="true" />
+                <element signature="e#6741#6742#0" expanded="true" />
+                <element signature="e#6809#6810#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/Compiler/CompilationEngine.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="235">
+              <caret line="71" column="12" selection-start-line="71" selection-start-column="12" selection-end-line="71" selection-end-column="12" />
             </state>
           </provider>
         </entry>
@@ -54,15 +62,16 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/src/Compiler/JackTokenizer.java" />
         <option value="$PROJECT_DIR$/src/Compiler/CompilationEngine.java" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="283" />
-    <option name="y" value="53" />
-    <option name="width" value="1400" />
-    <option name="height" value="1000" />
+  <component name="ProjectFrameBounds" extendedState="4">
+    <option name="x" value="46" />
+    <option name="y" value="27" />
+    <option name="width" value="937" />
+    <option name="height" value="988" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -112,6 +121,27 @@
       </list>
     </option>
   </component>
+  <component name="RunManager">
+    <configuration name="JackAnalyzer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Compiler.JackAnalyzer" />
+      <module name="Compiler" />
+      <option name="PROGRAM_PARAMETERS" value="Square.jack" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="Compiler.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.JackAnalyzer" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -126,7 +156,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="46" y="27" width="1874" height="988" extended-state="6" />
+    <frame x="46" y="27" width="937" height="988" extended-state="4" />
     <editor active="true" />
     <layout>
       <window_info id="Favorites" side_tool="true" />
@@ -140,10 +170,11 @@
       <window_info anchor="bottom" id="Version Control" />
       <window_info anchor="bottom" id="Terminal" />
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="bottom" id="Messages" weight="0.3298122" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3298122" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39906102" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -160,22 +191,32 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/Compiler/JackAnalyzer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="13" selection-start-column="13" selection-end-column="13" />
+        <state relative-caret-position="152">
+          <caret line="9" column="35" selection-start-line="9" selection-start-column="35" selection-end-line="9" selection-end-column="35" />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/.attach_pid563">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Compiler/JackTokenizer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
-          <caret line="147" column="8" selection-start-line="147" selection-start-column="8" selection-end-line="147" selection-end-column="8" />
+        <state relative-caret-position="1166">
+          <caret line="180" selection-start-line="180" selection-end-line="180" />
+          <folding>
+            <element signature="e#6519#6520#0" expanded="true" />
+            <element signature="e#6592#6593#0" expanded="true" />
+            <element signature="e#6661#6662#0" expanded="true" />
+            <element signature="e#6741#6742#0" expanded="true" />
+            <element signature="e#6809#6810#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Compiler/CompilationEngine.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="287" column="24" selection-start-line="287" selection-start-column="24" selection-end-line="287" selection-end-column="24" />
+        <state relative-caret-position="235">
+          <caret line="71" column="12" selection-start-line="71" selection-start-column="12" selection-end-line="71" selection-end-column="12" />
         </state>
       </provider>
     </entry>
