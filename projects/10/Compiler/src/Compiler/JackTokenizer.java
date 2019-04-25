@@ -13,24 +13,27 @@ public class JackTokenizer {
     private Queue<String> queue = new LinkedList<>();
 
     public JackTokenizer(Reader reader) {
-//        this.inputStream = r;
         try {
             int token;
             st = new StreamTokenizer(reader);
             st.ordinaryChar('.');
+            st.ordinaryChar('/');
+            st.slashSlashComments(true);
+            st.slashStarComments(true);
+            st.quoteChar('"');
             //System.out.println(st);
             while ((token = st.nextToken()) != StreamTokenizer.TT_EOF) {
-                if (st.ttype == StreamTokenizer.TT_WORD) {
+                if (st.ttype == '"' || st.ttype == StreamTokenizer.TT_WORD) {
                     queue.add(st.sval);
-                    System.out.println(st.sval);
+                    System.out.println("word:" + st.sval);
                 }
                 else if (st.ttype == StreamTokenizer.TT_NUMBER) {
                     queue.add(Double.toString(st.nval));
-                    System.out.println(st.nval);
+                    System.out.println("number:" + st.nval);
                 }
                 else {
                     queue.add(Character.toString((char) token));
-                    System.out.println(Character.toString((char) token));
+                    System.out.println("string token:" + Character.toString((char) token));
                 }
             }
         } catch (IOException e) {
@@ -38,91 +41,6 @@ public class JackTokenizer {
         }
         // iterate over st and work with Jack-specific keywords and syntax
     }
-    // public JackTokenizer(String fileName) {
-    //     String line;
-    //     try {
-    //         inputStream = new BufferedReader(new FileReader(fileName));
-    //         while ((line = inputStream.readLine()) != null) {
-    //             // remove empty lines and comments
-    //             line = line.trim();
-    //             if (line.startsWith("//") || line.isEmpty())
-    //                 continue;
-    //             if (line.contains("//"))
-    //                 line = line.split("//")[0].trim();
-    //             // need to get rid of /* */ and /** */ comments
-    //             // tokenize the line and add it to the queue
-    //             // if the line contains a String constant (" ")
-    //             // then just add it to the queue
-    //             // tokens are not gonna work. Need to analyze each line
-    //             // character by character
-    //             // not every token is separated by spaces
-    //             // tokens = line.split(" ");
-    //             // for (String s : tokens) {
-    //             //     s = s.trim();
-    //             //     if (!s.isEmpty()) {
-    //             //         queue.add(s);
-    //             //     }
-    //             // }
-    //             lineTokenizer(line);
-
-    //         }
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
-
-    // private void lineTokenizer(String s) {
-    //     String word = "";
-    //     String stringConstant = "";
-    //     String integerConstant = "";
-    //     Boolean string = false;
-    //     Boolean integer = false;
-    //     for (int i = 0; i < s.length(); i++) {
-    //         char c = s.charAt(i);
-    //         if (string) {
-    //             stringConstant += c;
-    //         } else if (integer && !isInteger(String.valueOf(c))) {
-    //             // integer is true, but the current character c is not longer an integer
-    //             // let's add the value of integerContant to the queue
-    //             queue.add(integerConstant);
-    //             // let's reset
-    //             integer = false;
-    //             integerConstant = "";
-    //         } else if ("\"".indexOf(c) != -1) {
-    //             // this is the beginning of a String constant
-    //             // build the string constant
-    //             // the first " will set this string to true, the next string will set this to false
-    //             string = (string) ? false : true; // toggle between true and false
-    //             stringConstant += c;
-    //             if (!string) { // if string is false, that means we reached the end of the string
-    //                 // add this string to the queue before resetting it
-    //                 queue.add(stringConstant);
-    //                 stringConstant = ""; // reset value
-    //             }
-    //         } else if ("()[]{},;=.+-*/&|~<>".indexOf(c) != -1) {
-    //             queue.add(String.valueOf(c));
-    //         } else if (isInteger(String.valueOf(c))) {
-    //             // need to store Boolean integer just to reset
-    //             integer = true;
-    //             // integer = (integer) ? false : true; // toggle between true and false
-    //             integerConstant += c;
-    //         } else if (" ".indexOf(c) != -1) {
-    //             // ignore white spaces, the case of the space being inside quotes is already taken care of.
-    //         } else {
-    //             // this is probably a reserved word or identifier
-    //             // iterate till we find the next space
-    //             while (" ".indexOf(c) == 1) {
-    //                 word += c;
-    //                 i++;
-    //             }
-    //             i--; // let's return to the right index
-    //             // we can add this word to queue without caring whether it is a reserved word or an identifier
-    //             // the tokenType method will take care of distinguishing which type it is.
-    //             queue.add(word);
-    //             word = ""; // reset this
-    //         }
-    //     }
-    // }
 
     public Boolean hasMoreTokens() { return (queue.peek() != null); }
 
@@ -136,8 +54,9 @@ public class JackTokenizer {
                                     + "true|false|null|"
                                     + "this")) {
             return TokenType.KEYWORD;
-        // } else if ("()[]{},;=.+-*/&|~<>".matches(currentToken)) {
-        } else if (currentToken.matches("[(){},;=.+*-|/&~<>]")) {
+        } else if ("{}()[].,;+-*/&|<>=~".contains(currentToken)) {
+        // } else if (currentToken.matches("()\[{},;=+*|/&~<>\]-")) {
+        // } else if (currentToken.contains("{}()[].,;+-*/&|<>=~")) {
             return TokenType.SYMBOL;
         } else if (isInteger(currentToken)) {
             return TokenType.INT_CONST;
