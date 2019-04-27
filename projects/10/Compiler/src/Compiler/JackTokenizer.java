@@ -25,15 +25,15 @@ public class JackTokenizer {
             while ((token = st.nextToken()) != StreamTokenizer.TT_EOF) {
                 if (st.ttype == '"' || st.ttype == StreamTokenizer.TT_WORD) {
                     queue.add(st.sval);
-                    System.out.println("word:" + st.sval);
+//                    System.out.println("word:" + st.sval);
                 }
                 else if (st.ttype == StreamTokenizer.TT_NUMBER) {
                     queue.add(Double.toString(st.nval));
-                    System.out.println("number:" + st.nval);
+//                    System.out.println("number:" + st.nval);
                 }
                 else {
                     queue.add(Character.toString((char) token));
-                    System.out.println("string token:" + Character.toString((char) token));
+//                    System.out.println("string token:" + Character.toString((char) token));
                 }
             }
         } catch (IOException e) {

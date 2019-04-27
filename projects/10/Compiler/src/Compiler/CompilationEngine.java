@@ -44,13 +44,14 @@ public class CompilationEngine {
 
     /* 'class' className '{' classVarDec* subroutineDec* '}' */
     public void compileClass() {
+        out.println("<?xml version=\"1.0\"" + " encoding=\"UTF-8\"?>");
         out.println("<class>");
         int level = 1;
         jt.advance();
-        System.out.println("in compileClass 1:" + jt.keyWord() + "###");
+//        System.out.println("in compileClass 1:" + jt.keyWord() + "###");
         // 'class' keyword
         if (jt.tokenType() == TokenType.KEYWORD && jt.keyWord().equals("class")) {
-            System.out.println("in compileClass 2:" + jt.keyWord());
+//            System.out.println("in compileClass 2:" + jt.keyWord());
             printKeyword(level);
         }
         // className
@@ -377,7 +378,7 @@ public class CompilationEngine {
         // expression
         compileExpression(level + 1);
         // ';'
-        System.out.println("should be ; " + jt.symbol());
+//        System.out.println("should be ; " + jt.symbol());
         printSymbol(level);
         out.println(indent(level-1) + "</letStatement>");
     }
@@ -462,6 +463,9 @@ public class CompilationEngine {
 
     private String indent(int level) {
         String indent = "  ";
+        for (int i = 1; i < level; i++) {
+            indent += "  ";
+        }
         //indent = indent.repeat(level);
         // if (level == 2)
         //     indent += indent; // double the indentation level
@@ -473,13 +477,15 @@ public class CompilationEngine {
         //     indent += indent + indent + indent + indent;
         // else if (level == 6)
         //     indent += indent + indent + indent + indent + indent;
+        // else if (level == 7)
+        //     indent += indent + indent + indent + indent + indent + indent;
 
-        return indent.repeat(level);
+        return indent;
     }
 
     private void printKeyword(int level) {
         if (jt.tokenType() == TokenType.KEYWORD) {
-            System.out.println("in printKeyword:" + jt.keyWord());
+//            System.out.println("in printKeyword:" + jt.keyWord());
             out.println(indent(level) + "<keyword> " + jt.keyWord() + " </keyword>");
             jt.advance();
         } else {
@@ -488,7 +494,7 @@ public class CompilationEngine {
     }
 
     private void printSymbol(int level) {
-        System.out.println("printSymbol type: " + jt.tokenType());
+//        System.out.println("printSymbol type: " + jt.tokenType());
         if (jt.tokenType() == TokenType.SYMBOL) {
             String symbol;
             if (jt.symbol() == '<')
