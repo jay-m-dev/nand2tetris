@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="VMTranslator:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/VMTranslator_jar</output-path>
+    <root id="archive" name="VMTranslator.jar">
+      <element id="module-output" name="VMTranslator" />
+    </root>
+  </artifact>
+</component>

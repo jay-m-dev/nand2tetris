@@ -14,9 +14,16 @@ public class CodeWriter {
     private String funcName = "";
 
 
-    public CodeWriter() {
+    public CodeWriter(String fileName) {
         try {
-            out = new PrintWriter(new BufferedWriter(new FileWriter("MyProg.asm")));
+
+//            setFileName(fileName);
+            String outFile = fileName;
+            if (fileName.contains(".")) {
+                outFile = fileName.substring(0, fileName.indexOf("."));
+            }
+            outFile += ".asm";
+            out = new PrintWriter(new BufferedWriter(new FileWriter(outFile)));
             // no need to initialize
             // will be taken care of by Sys.init
             // out.println("@256" + "\n" + "D=A" + "\n" + "@SP" + "\n" + "M=D" + "\n"); // set SP
