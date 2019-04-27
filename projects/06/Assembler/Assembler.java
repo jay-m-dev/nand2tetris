@@ -9,8 +9,13 @@ class Assembler {
     private static SymbolTable st = new SymbolTable();
     public static void main(String[] args) {
         if (args != null && args.length > 0)  {
-            buildSymbolTable(args[0]);
-            assemble(args[0]);
+            if (args[0].endsWith(".asm")) {
+                buildSymbolTable(args[0]);
+                assemble(args[0]);
+                System.out.println("Done assembling " + args[0]);
+            } else {
+                System.out.println("Invalid file. Must be a '.asm' file.");
+            }
         }
     }
     public static void buildSymbolTable(String fileName) {
@@ -29,7 +34,8 @@ class Assembler {
     }
     public static void assemble(String fileName) {
         try {
-            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("MyProg.hack")));
+            String outFile = fileName.substring(0, fileName.indexOf(".")) + ".hack";
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outFile)));
             Parser parser = new Parser(fileName);
             String tempAddress;
             String line;

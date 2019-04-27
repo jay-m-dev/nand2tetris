@@ -95,7 +95,7 @@ class Parser {
         if (ret.contains(";"))
             ret = ret.split(";")[0]; // we want the first token
 
-            System.out.println("comp:" + ret + "***");
+//            System.out.println("comp:" + ret + "***");
         return ret;
     }
     public String jump() {
