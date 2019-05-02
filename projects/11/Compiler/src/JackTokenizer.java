@@ -1,14 +1,15 @@
 import java.io.*;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 public class JackTokenizer {
     JackTokenizer jt;
     StreamTokenizer st;
     private Reader inputStream;
     private String currentToken;
+    private String previousToken;
     private String[] tokens;
-    private Queue<String> queue = new LinkedList<>();
+//    private Queue<String> queue = new LinkedList<>();
+    private ArrayDeque<String> queue = new ArrayDeque<>();
 
     public JackTokenizer(Reader reader) {
         try {
@@ -26,7 +27,7 @@ public class JackTokenizer {
 //                    System.out.println("word:" + st.sval);
                 }
                 else if (st.ttype == StreamTokenizer.TT_NUMBER) {
-                    queue.add(Double.toString(st.nval));
+                    queue.add(Integer.toString((int)st.nval));
 //                    System.out.println("number:" + st.nval);
                 }
                 else {
@@ -42,7 +43,11 @@ public class JackTokenizer {
 
     public Boolean hasMoreTokens() { return (queue.peek() != null); }
 
-    public void advance() { currentToken = queue.poll(); }
+    public void advance() { previousToken = currentToken; currentToken = queue.poll(); }
+
+    public void pointerBack() { queue.push(currentToken); } // put the currentToken back
+
+    public void pointerPrevious() { queue.push(previousToken); }
 
     public TokenType tokenType() {
         if (currentToken.matches("class|constructor|method|function|"

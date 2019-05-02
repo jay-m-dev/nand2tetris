@@ -1,83 +1,88 @@
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 public class SymbolTable {
-//    private HashMap<String, HashMap<String, HashMap<Kind, Integer>>> classScope;
-//    private HashMap<String, Integer> classScope;
-    // private HashMap<Kind, Integer> subIndex;
-    // private int[][][] properties;
-//    private HashMap<Kind, Integer> varCounts;
-//    private HashMap<Integer, String> varTypes;
-    //private HashMap<String, HashMap<Kind, Integer>> subType;
-//    private HashMap<String, HashMap<String, HashMap<Kind, Integer>>> subroutineScope;
-//    private HashMap<String, Integer> subroutineScope;
-    // private HashMap<String, Integer> subroutineScope;
-//    private HashMap<String, HashMap<String, Kind>> classScope;
-//    private HashMap<String, HashMap<String, Kind>> subroutineScope;
-
-
-    private HashMap<String, Integer> subIndexes;
-    private HashMap<String, String> subTypes;
-//    private Map<String, HashMap<String, HashMap<Kind, Integer>>> classScope;
-//    private Map<String, HashMap<String, HashMap<Kind, Integer>>> subroutineScope;
-    private HashMap<String, Kind> classScope;
-    private HashMap<String, Kind> subroutineScope;
-    private int[] varCounts;
+    private HashMap<String,Symbol> classSymbols;//for STATIC, FIELD
+    private HashMap<String,Symbol> subroutineSymbols;//for ARG, VAR
+    private HashMap<Kind,Integer> indices;
 
     public SymbolTable() {
-        this.classScope = new HashMap<>();
-        // this.subroutineScope = new HashMap<String, Map<String, Map<Kind, Integer>>>();
-        startSubroutine();
+        classSymbols = new HashMap<>();
+        subroutineSymbols = new HashMap<>();
+
+        indices = new HashMap<>();
+        indices.put(Kind.ARG,0);
+        indices.put(Kind.FIELD,0);
+        indices.put(Kind.STATIC,0);
+        indices.put(Kind.VAR,0);
+
     }
-    /* Starts a new subroutine scope (i.e. resets the subroutine's symbol table */
+
     public void startSubroutine() {
-        this.subroutineScope = new HashMap<>();
-        this.varCounts = new int[4]; // STATIC, FIELD, ARG, VAR
-//        this.varTypes = new HashMap<>();
+        subroutineSymbols.clear();
+        indices.put(Kind.VAR,0);
+        indices.put(Kind.ARG,0);
     }
 
     public void define(String name, String type, Kind kind) {
-        subIndexes = new HashMap<>();
-//        Map<String, Map<Kind, Integer>> subType = new HashMap<>();
-        this.varCounts[varCount(kind)]++;
-        subIndexes.put(name, varCounts[varCount(kind)]);
-        subTypes.put(name, type);
-//        HashMap<String, HashMap<Kind, Integer>> temp = new HashMap<>();
-//        temp.put(type, subIndex);
-        if (kind == Kind.STATIC || kind == Kind.FIELD) {
-            // subroutine Scope
-            this.classScope.put(name, kind);
 
-        } else if (kind == Kind.ARG || kind == Kind.VAR){
-            // class Scope
-            this.subroutineScope.put(name, kind);
+        if (kind == Kind.ARG || kind == Kind.VAR) {
+
+            int index = indices.get(kind);
+            Symbol symbol = new Symbol(type,kind,index);
+            indices.put(kind,index+1);
+            subroutineSymbols.put(name,symbol);
+
+        } else if(kind == Kind.STATIC || kind == Kind.FIELD) {
+
+            int index = indices.get(kind);
+            Symbol symbol = new Symbol(type,kind,index);
+            indices.put(kind,index+1);
+            classSymbols.put(name,symbol);
+
         }
-        // increase counts
+
     }
 
-    public int varCount(Kind kind) {
-        Kind[] indexes = { Kind.STATIC, Kind.FIELD, Kind.ARG, Kind.VAR };
-        return varCounts[Arrays.asList(indexes).indexOf(kind)];
+    public int varCount(Kind kind){
+        return indices.get(kind);
     }
 
     public Kind kindOf(String name) {
-//        HashMap<String, Kind> temp = this.subroutineScope.get(name);
-        return this.subroutineScope.get(name);
+
+        Symbol symbol = lookUp(name);
+
+        if (symbol != null) return symbol.getKind();
+
+        return Kind.NONE;
     }
 
     public String typeOf(String name) {
-        return this.subTypes.get(name);
+
+        Symbol symbol = lookUp(name);
+
+        if (symbol != null) return symbol.getType();
+
+        return "";
     }
 
     public int indexOf(String name) {
-        return this.subIndexes.get(name);
+
+        Symbol symbol = lookUp(name);
+
+        if (symbol != null) return symbol.getIndex();
+
+        return -1;
     }
-}
-enum Kind {
-    STATIC,
-    FIELD,
-    ARG,
-    VAR,
-    NONE
+
+    private Symbol lookUp(String name) {
+
+        if (classSymbols.get(name) != null) {
+            return classSymbols.get(name);
+        } else if (subroutineSymbols.get(name) != null) {
+            return subroutineSymbols.get(name);
+        } else {
+            return null;
+        }
+
+    }
 }

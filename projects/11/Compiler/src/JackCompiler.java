@@ -12,13 +12,13 @@ public class JackCompiler {
                 if (files != null) {
                     for (File file : files) {
                         process(file.getCanonicalPath());
-                        System.out.println("Done analyzing " + file.getCanonicalPath());
+                        System.out.println("Done compiling " + file.getCanonicalPath());
                     }
                 }
                 // System.err.println("Invalid File Name: " + args[0]);
             } else {
                 process(args[0]);
-                System.out.println("Done analyzing " + args[0]);
+                System.out.println("Done compiling " + args[0]);
                 // BufferedReader reader = new BufferedReader(new FileReader(args[0]));
                 // JackTokenizer jt = new JackTokenizer(reader);
                 // // Create an output file called Xxx.xml and prepare it for writing
